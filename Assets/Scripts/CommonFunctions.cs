@@ -16,4 +16,9 @@ public class CommonFunctions : MonoBehaviour
         sprite.color = UnityEngine.Random.ColorHSV();
     }
 
+    public void RandomizeColor(UIWidget widget)
+    {
+        widget.color = UnityEngine.Random.ColorHSV();
+    }
+
 }
