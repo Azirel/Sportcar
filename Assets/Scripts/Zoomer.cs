@@ -9,19 +9,18 @@ public class Zoomer : MonoBehaviour
 
     [SerializeField] RectTransform scaledTransform;
     [SerializeField] ScrollRect scrollRect;
+    [SerializeField] RectTransform middlePoint;
+
     public float minScaleVelue = 0.3f;
     public float maxScaleVelue = 5;
-    public float zoomSpeed = 1.5f;
+    [Tooltip("Defines impact on camera shifting it's position towards touches middle point")]
+    public float zoomMotionAffect = 0.5f;
 
     private float deltaMagnitude = 0;
-    private float startDelta = 0;
-    private float scaleFactor;
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
+    private float previousDelta = 0;
+    private float currentDelta = 0;
+    private float scaleFactor = 0;
+    private Vector2 touchesMiddlePoint;
 
     // Update is called once per frame
     void Update()
@@ -29,21 +28,26 @@ public class Zoomer : MonoBehaviour
         if (Input.touchCount > 1)
         {
             scrollRect.enabled = false;
-            if (startDelta == 0)
+            if (previousDelta == 0)
             {
-                startDelta = Vector2.Distance(Input.touches[0].position, Input.touches[1].position);
+                previousDelta = Vector2.Distance(Input.touches[0].position, Input.touches[1].position);
             }
             else
             {
-                scaleFactor = Vector2.Distance(Input.touches[0].position, Input.touches[1].position) / startDelta;
-                Debug.Log(scaleFactor);
+                currentDelta = Vector2.Distance(Input.touches[0].position, Input.touches[1].position);
+                scaleFactor = currentDelta / previousDelta;
                 scaledTransform.localScale *= scaleFactor;
+                touchesMiddlePoint = Camera.main.ScreenToWorldPoint((Input.touches[0].position + Input.touches[1].position) / 2);
+                middlePoint.position = touchesMiddlePoint;
+                scaledTransform.position = Vector3.MoveTowards(scaledTransform.position, middlePoint.position, zoomMotionAffect);
+                //scaledTransform.position += middlePoint.position * zoomMotionAffect;
+                previousDelta = currentDelta;
             }
         }
         else
         {
             scrollRect.enabled = true;
-            startDelta = 0;
+            previousDelta = 0;
         }
     }
 }
