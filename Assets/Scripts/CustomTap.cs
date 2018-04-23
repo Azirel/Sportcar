@@ -4,29 +4,30 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class CustomTap : MonoBehaviour, IPointerUpHandler
+public class CustomTap : MonoBehaviour//, IPointerUpHandler
 {
     public UnityEvent onPointerUp;
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        Debug.Log("!!!;");
-    }
+    public UnityEvent onPointerDown;
+    [Range(0,10)]public float timeLimit;
+
+    private float counter = 0;
 
     private void OnMouseUp()
     {
-        Debug.Log("OnMouseUp");
-        onPointerUp.Invoke();
+        if (counter <= timeLimit)
+        {
+            onPointerUp.Invoke(); 
+        }
     }
 
-    // Use this for initialization
-    void Start()
+    private void OnMouseDown()
     {
-
+        onPointerDown.Invoke();
+        counter = 0;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
+        counter += Time.deltaTime;
     }
 }
